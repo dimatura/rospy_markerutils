@@ -1,0 +1,58 @@
+#!/usr/bin/env python
+
+import rospy
+import argparse
+import tf
+import csv
+from pygeom import Quaternion, RigidTransform
+from visualization_msgs.msg import Marker
+from geometry_msgs.msg import Point
+import numpy as np
+from collections import deque
+
+def path_callback(filename, r, g, b, alpha, size, topic):
+	pub = rospy.Publisher(topic, Marker, queue_size=0)
+	rospy.sleep(1.0)
+
+	ifile  = open(filename, "rt")
+	reader = csv.reader(ifile)
+	wpt = None
+
+	marker = Marker()
+	marker.header.frame_id = '/world'
+	marker.type = Marker.SPHERE_LIST
+	marker.action = Marker.ADD
+
+	quat = Quaternion.identity()
+	tvec = np.array([0., 0., 0.])
+	pose = RigidTransform( quat, tvec )
+	marker.pose = pose.to_pose_msg()
+
+	marker.scale.x = size
+	marker.scale.y = size
+	marker.scale.z = size
+
+	marker.ns = 'path'
+	marker.id = 1
+	marker.color.r = r
+	marker.color.g = g
+	marker.color.b = b
+	marker.color.a = alpha
+
+	wpt = csv.reader(ifile).next()
+	marker.points.append(Point(x=float(wpt[1]), y=float(wpt[2]), z=float(wpt[3])))
+
+	wpt = deque(csv.reader(ifile), 1)[0]
+	marker.points.append(Point(x=float(wpt[1]), y=float(wpt[2]), z=float(wpt[3])))
+	pub.publish(marker)
+
+if __name__ == '__main__':
+	rospy.init_node('display_endpts_trajectory_csv')
+	filename = rospy.get_param('~file')
+	r = rospy.get_param('~r')
+	g = rospy.get_param('~g')
+	b = rospy.get_param('~b')
+	alpha = rospy.get_param('~alpha')
+	size = rospy.get_param('~size')
+	topic = rospy.get_param('~topic')
+	path_callback(filename, r, g, b, alpha, size, topic)
