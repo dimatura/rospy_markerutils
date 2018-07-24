@@ -71,7 +71,7 @@ class MarkerWrapper(object):
         self.marker.color.g = hex_to_float(hexstr[2:4])
         self.marker.color.b = hex_to_float(hexstr[4:6])
 
-    def set_alpha_float(self, alpha):
+    def set_alpha(self, alpha):
         self.marker.color.a = alpha
 
     def set_frame_id(self, frame_id):
@@ -143,7 +143,7 @@ class RectangleMarker(MarkerWrapper):
         self.marker.points.append(points[0])
         self.marker.points.append(points[2])
         self.marker.points.append(points[3])
-        self.set_rgb_int([0x52, 0x19, 0])
+        self.set_color_int([0x52, 0x19, 0])
 
 
 class WireframeBoxMarker(MarkerWrapper):
@@ -306,6 +306,6 @@ def make_box_marker(box_center, box_dim):
     """
     marker = BoxMarker(box_dim)
     marker.set_translation(box_center)
-    marker.set_rgb_float([1., 0., 0.])
-    marker.set_alpha(0.28)
+    marker.set_color_float([1., 0., 0.])
+    marker.set_alpha(0.80)
     return marker.to_msg()
