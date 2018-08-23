@@ -53,6 +53,7 @@ class MarkerWrapper(object):
         self.marker.color.r = rgb[0]/255.
         self.marker.color.g = rgb[1]/255.
         self.marker.color.b = rgb[2]/255.
+        return self
 
     def set_color_float(self, rgb):
         rgb = np.asarray(rgb)
@@ -63,6 +64,7 @@ class MarkerWrapper(object):
         self.marker.color.r = rgb[0]
         self.marker.color.g = rgb[1]
         self.marker.color.b = rgb[2]
+        return self
 
     def set_color_hex(self, hexstr):
         hexstr = hexstr.replace('#', '')
@@ -70,12 +72,15 @@ class MarkerWrapper(object):
         self.marker.color.r = hex_to_float(hexstr[0:2])
         self.marker.color.g = hex_to_float(hexstr[2:4])
         self.marker.color.b = hex_to_float(hexstr[4:6])
+        return self
 
     def set_alpha(self, alpha):
         self.marker.color.a = alpha
+        return self
 
     def set_frame_id(self, frame_id):
         self.marker.header.frame_id = frame_id
+        return self
 
     def set_scale(self, scale):
         try:
@@ -86,22 +91,27 @@ class MarkerWrapper(object):
             self.marker.scale.x = scale
             self.marker.scale.y = scale
             self.marker.scale.z = scale
+        return self
 
     def set_id(self, id):
         self.marker.id = id
+        return self
 
     def set_ns(self, ns):
         self.marker.ns = ns
+        return self
 
     def set_quat(self, quat):
         self.quat = quat
         self.pose = rospy_geomutils.RigidTransform(self.quat, self.tvec)
         self.marker.pose = self.pose.to_pose_msg()
+        return self
 
     def set_translation(self, tvec):
         self.tvec = np.asarray(tvec)
         self.pose = rospy_geomutils.RigidTransform(self.quat, self.tvec)
         self.marker.pose = self.pose.to_pose_msg()
+        return self
 
     def to_msg(self, stamp=None, frame_id=None):
         if stamp is not None:
@@ -111,12 +121,14 @@ class MarkerWrapper(object):
         return self.marker
 
 
-class BoxMarker(MarkerWrapper):
-    def __init__(self, box_dim):
-        super(BoxMarker, self).__init__()
-        self.marker.scale.x = box_dim[0]
-        self.marker.scale.y = box_dim[1]
-        self.marker.scale.z = box_dim[2]
+class CubeMarker(MarkerWrapper):
+    def __init__(self, box_dim=None):
+        super(CubeMarker, self).__init__()
+        self.type = Marker.CUBE
+        if box_dim is not None:
+            self.marker.scale.x = box_dim[0]
+            self.marker.scale.y = box_dim[1]
+            self.marker.scale.z = box_dim[2]
 
 
 class RectangleMarker(MarkerWrapper):
@@ -242,7 +254,6 @@ class TextMarker(MarkerWrapper):
         self.marker.type = Marker.TEXT_VIEW_FACING
         self.marker.text = text
         self.marker.scale.z = scale  # height of an uppercase A
-        # TODO jsk overlay text
 
 
 def _bounding_box_to_lines(min_pt, max_pt):
@@ -301,10 +312,10 @@ def make_marker(stamp=0, frame_id=''):
     return MarkerWrapper().to_msg(stamp, frame_id)
 
 
-def make_box_marker(box_center, box_dim):
+def make_cube_marker(box_center, box_dim):
     """ a reasonable default box marker.
     """
-    marker = BoxMarker(box_dim)
+    marker = CubeMarker(box_dim)
     marker.set_translation(box_center)
     marker.set_color_float([1., 0., 0.])
     marker.set_alpha(0.80)

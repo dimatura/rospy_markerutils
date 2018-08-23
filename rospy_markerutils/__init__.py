@@ -10,16 +10,15 @@
 
 
 from make_markers import make_marker
-from make_markers import make_box_marker
-#from make_markers import make_rectangle_marker
-#from make_markers import wireframe_box_marker
+from make_markers import make_cube_marker
 
 from make_markers import MarkerWrapper
-from make_markers import BoxMarker
+from make_markers import CubeMarker
 from make_markers import RectangleMarker
 from make_markers import ArrowMarker
 from make_markers import WireframeBoxMarker
 from make_markers import PathMarker
+from make_markers import TextMarker
 
 from interactive import make_6dof_marker
 from interactive import InteractiveMarkerManager
