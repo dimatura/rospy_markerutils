@@ -113,6 +113,18 @@ class MarkerWrapper(object):
         self.marker.pose = self.pose.to_pose_msg()
         return self
 
+    def set_text(self, text):
+        self.marker.text = text
+        return self
+
+    def set_lifetime(self, duration):
+        self.marker.lifetime = duration
+        return self
+
+    def set_frame_locked(self, frame_locked):
+        self.marker.frame_locked = frame_locked
+        return self
+
     def to_msg(self, stamp=None, frame_id=None):
         if stamp is not None:
             self.marker.header.stamp = stamp
